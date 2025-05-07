@@ -4,6 +4,7 @@ import MainContent from "./MainContent.jsx";
 import Loader from "./Loader.jsx";
 import Error from "./Error.jsx";
 import StartScreen from "./StartScreen.jsx";
+import Question from "./Question.jsx";
 
 const initialState = {
   questions: [],
@@ -19,9 +20,7 @@ function reducer(state, action) {
       throw new Error("挙動がわかりません");
     case "dataFailed":
       return { ...state, status: "error" };
-    case "ready":
-      return { ...state, status: "ready" };
-    case "active":
+    case "start":
       return { ...state, status: "active" };
     case "finished":
       return { ...state, status: "finished" };
@@ -48,8 +47,12 @@ export default function App() {
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
         {status === "ready" && (
-          <StartScreen numberOfQuestions={numberOfQuestions} />
+          <StartScreen
+            numberOfQuestions={numberOfQuestions}
+            dispatch={dispatch}
+          />
         )}
+        {status === "active" && <Question />}
       </MainContent>
     </div>
   );
