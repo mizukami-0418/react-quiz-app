@@ -1,9 +1,12 @@
 import React, { useEffect, useReducer } from "react";
 import Header from "./Header.jsx";
 import MainContent from "./MainContent.jsx";
+import Loader from "./Loader.jsx";
+import Error from "./Error.jsx";
+import StartScreen from "./StartScreen.jsx";
 
 const initialState = {
-  question: [],
+  questions: [],
   // 'loading', 'error', 'ready', 'active', 'finished'
   status: "loading",
 };
@@ -11,7 +14,7 @@ const initialState = {
 function reducer(state, action) {
   switch (action.type) {
     case "dataReceived":
-      return { ...state, question: action.payload, status: "ready" };
+      return { ...state, questions: action.payload, status: "ready" };
     default:
       throw new Error("挙動がわかりません");
     case "dataFailed":
@@ -26,7 +29,9 @@ function reducer(state, action) {
 }
 
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status }, dispatch] = useReducer(reducer, initialState);
+
+  const numberOfQuestions = questions.length;
 
   useEffect(function () {
     fetch("http://localhost:9000/questions")
@@ -40,8 +45,11 @@ export default function App() {
       <Header />
 
       <MainContent>
-        <p>1/15</p>
-        <p>質問は？</p>
+        {status === "loading" && <Loader />}
+        {status === "error" && <Error />}
+        {status === "ready" && (
+          <StartScreen numberOfQuestions={numberOfQuestions} />
+        )}
       </MainContent>
     </div>
   );
